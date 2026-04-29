@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday CTRLL!!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a0010 0%, #2d0030 40%, #1a0020 100%);
+      overflow: hidden;
+    }
+
+    .container {
+      text-align: center;
+      padding: 2rem;
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    /* ===== CSS DARI GAMBAR ===== */
+    .Happy__Birthday {
+      font-family: 'Dancing Script', cursive;
+      color: #c2185b;
+      font-size: 3.5em;
+      font-weight: 700;
+      text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.7);
+      display: inline-block;
+      animation: pulse-glow 2s ease-in-out infinite,
+                 bounce-in .8s ease-out forwards;
+    }
+
+    .subtitle {
+      font-family: 'Dancing Script', cursive;
+      color: #f48fb1;
+      font-size: 1.3em;
+      font-weight: 700;
+      margin-top: 0.3rem;
+      margin-bottom: 1.5rem;
+      animation: subtitle-fade .8s ease-out .6s both;
+      text-shadow: 1px 1px 3px rgba(255,255,255,0.4);
+    }
+
+    /* === BALON === */
+    .balloons { display:flex; justify-content:center; gap:24px; margin-bottom:1.2rem; }
+    .balloon svg { animation: float-balloon 3s ease-in-out infinite; }
+    .balloon:nth-child(2) svg { animation-delay:.5s; }
+    .balloon:nth-child(3) svg { animation-delay:1s; }
+    .balloon:nth-child(4) svg { animation-delay:1.5s; }
+    .balloon:nth-child(5) svg { animation-delay:2s; }
+
+    .flame { animation: flicker .45s ease-in-out infinite; transform-origin: bottom center; }
+    .sparkle-icon { animation: sparkle 1.8s ease-in-out infinite; position:absolute; }
+
+    /* === CONFETTI === */
+    #confetti-container {
+      position: fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* === TOMBOL === */
+    .btn-celebrate {
+      margin-top: 1rem;
+      padding: 10px 30px;
+      font-family: 'Dancing Script', cursive;
+      font-size: 16px;
+      font-weight: 700;
+      color: #c2185b;
+      background: transparent;
+      border: 1.5px solid #c2185b;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all .3s;
+    }
+    .btn-celebrate:hover { background:#c2185b; color:#fff; transform:scale(1.05); }
+
+    /* ================================
+       PHOTO POPUP OVERLAY
+    ================================ */
+    .photo-overlay {
+      display: none;
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      background: rgba(10, 0, 20, 0.88);
+      z-index: 20;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    .photo-overlay.show {
+      display: flex;
+      animation: overlay-fade .3s ease-out forwards;
+    }
+
+    /* Bingkai foto bulat */
+    .photo-frame {
+      position: relative;
+    }
+    .photo-frame.pop {
+      animation: photo-pop .65s cubic-bezier(.22,1,.36,1) forwards;
+    }
+
+    /* =============================================
+     GANTI "foto_kamu.jpg" dengan nama file foto
+      atau path foto kamu di bawah ini
+    ============================================= */
+    .photo-frame img {
+      width: 230px;
+      height: 230px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 5px solid #c2185b;
+      display: block;
+
+      /* 
+        =========================================
+        CARA PAKAI:
+        
+        Jika foto di folder sama dengan file HTML:
+          src="nama_foto_kamu.jpg"
+
+        Jika pakai link online:
+          src="https://link-foto-kamu.com/foto.jpg"
+
+        Jika pakai Base64 (foto langsung di code):
+          src="data:image/jpeg;base64,/9j/4AAQ..."
+        =========================================
+      */
+      content: url('cit.jpg'); /* <-- GANTI DI SINI */
+    }
+
+    /* Cincin berputar di sekitar foto */
+    .ring {
+      position: absolute;
+      top: -14px; left: -14px;
+      width: 258px; height: 258px;
+      border-radius: 50%;
+      border: 3px dashed #f48fb1;
+      animation: ring-pulse 1.5s ease-in-out infinite;
+    }
+
+    /* Bintang berputar */
+    .stars-wrap {
+      position: absolute;
+      top: -20px; left: -20px;
+      width: 270px; height: 270px;
+      animation: stars-spin 5s linear infinite;
+    }
+
+    /* Teks nama di bawah foto */
+    .photo-name {
+      font-family: 'Dancing Script', cursive;
+      color: #f48fb1;
+      font-size: 1.8em;
+      font-weight: 700;
+      margin-top: 1.4rem;
+      text-shadow: 1px 1px 3px rgba(255,255,255,0.3);
+      animation: subtitle-fade .5s ease-out .4s both;
+    }
+
+    /* Hati melompat */
+    .heart-row {
+      display: flex;
+      gap: 10px;
+      margin-top: .6rem;
+      animation: subtitle-fade .5s ease-out .6s both;
+    }
+    .heart { width:24px; height:24px; fill:#c2185b; animation:heart-bounce 1.2s ease-in-out infinite; }
+    .heart:nth-child(2) { animation-delay:.2s; fill:#f48fb1; }
+    .heart:nth-child(3) { animation-delay:.4s; }
+
+    /* Tombol tutup */
+    .close-btn {
+      margin-top: 1.4rem;
+      padding: 8px 28px;
+      font-family: 'Dancing Script', cursive;
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      background: transparent;
+      border: 1.5px solid #f48fb1;
+      border-radius: 30px;
+      cursor: pointer;
+      animation: subtitle-fade .5s ease-out .8s both;
+      transition: all .2s;
+    }
+    .close-btn:hover { background:#c2185b; border-color:#c2185b; }
+
+    /* ==============================
+        SEMUA KEYFRAMES ANIMASI
+    ============================== */
+    @keyframes float-balloon {
+      0%,100% { transform:translateY(0px) rotate(-3deg); }
+      50% { transform:translateY(-18px) rotate(3deg); }
+    }
+    @keyframes flicker {
+      0%,100% { transform:scaleY(1) translateX(0); opacity:1; }
+      25% { transform:scaleY(1.2) translateX(-1px); opacity:.85; }
+      75% { transform:scaleY(0.88) translateX(1px); opacity:.95; }
+    }
+    @keyframes pulse-glow {
+      0%,100% {
+        text-shadow: 2px 2px 5px rgba(255,255,255,0.7), 0 0 20px #c2185b88;
+      }
+      50% {
+        text-shadow: 2px 2px 5px rgba(255,255,255,0.7), 0 0 40px #c2185bcc, 0 0 60px #c2185b55;
+      }
+    }
+    @keyframes sparkle {
+      0%,100% { opacity:0; transform:scale(0.4) rotate(0deg); }
+      50% { opacity:1; transform:scale(1.2) rotate(180deg); }
+    }
+    @keyframes bounce-in {
+      0% { transform:scale(0) translateY(40px); opacity:0; }
+      60% { transform:scale(1.1) translateY(-8px); opacity:1; }
+      100% { transform:scale(1) translateY(0); opacity:1; }
+    }
+    @keyframes subtitle-fade {
+      0% { opacity:0; transform:translateY(10px); }
+      100% { opacity:1; transform:translateY(0); }
+    }
+    @keyframes photo-pop {
+      0%   { transform:scale(0) rotate(-20deg); opacity:0; }
+      45%  { transform:scale(1.18) rotate(6deg); opacity:1; }
+      65%  { transform:scale(0.93) rotate(-3deg); }
+      82%  { transform:scale(1.06) rotate(2deg); }
+      100% { transform:scale(1) rotate(0deg); opacity:1; }
+    }
+    @keyframes overlay-fade {
+      0% { opacity:0; }
+      100% { opacity:1; }
+    }
+    @keyframes ring-pulse {
+      0%,100% { transform:scale(1); opacity:.75; }
+      50% { transform:scale(1.07); opacity:1; }
+    }
+    @keyframes stars-spin {
+      0% { transform:rotate(0deg); }
+      100% { transform:rotate(360deg); }
+    }
+    @keyframes heart-bounce {
+      0%,100% { transform:scale(1) translateY(0); }
+      50% { transform:scale(1.35) translateY(-7px); }
+    }
+    @keyframes confetti-fall {
+      0% { transform:translateY(0) rotate(0deg); opacity:1; }
+      100% { transform:translateY(110vh) rotate(720deg); opacity:0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CONFETTI CONTAINER -->
+  <div id="confetti-container"></div>
+
+  <!-- ================================
+PHOTO POPUP OVERLAY
+  ================================ -->
+  <div id="photo-overlay" class="photo-overlay">
+    <div class="photo-frame" id="photo-frame">
+
+      <!-- Cincin dashed -->
+      <div class="ring"></div>
+
+      <!-- Bintang berputar -->
+      <svg class="stars-wrap" viewBox="0 0 270 270">
+        <g fill="#f48fb1" opacity="0.75">
+          <polygon points="135,5 139,18 152,18 141,26 145,39 135,31 125,39 129,26 118,18 131,18"/>
+          <polygon points="265,135 252,139 252,152 244,141 231,145 239,135 231,125 244,129 252,118 252,131"/>
+          <polygon points="135,265 131,252 118,252 129,244 125,231 135,239 145,231 141,244 152,252 139,252"/>
+          <polygon points="5,135 18,131 18,118 26,129 39,125 31,135 39,145 26,141 18,152 18,139"/>
+          <polygon points="229,41 224,53 236,58 224,63 229,75 217,68 212,80 209,67 197,64 207,57 204,44 214,51"/>
+          <polygon points="41,229 53,224 58,236 63,224 75,229 68,217 80,212 67,209 64,197 57,207 44,204 51,214"/>
+        </g>
+      </svg>
+
+      <!--
+        =============================================
+        FOTO KAMU ADA DI SINI
+        Ganti src="foto_kamu.jpg" dengan:
+        - Nama file foto jika 1 folder: "foto.jpg"
+        - Path lengkap: "C:/Users/nama/foto.jpg"
+        - URL online: "https://..."
+        =============================================
+      -->
+      <img src="cit.jpg" alt="foto ulang tahun">
+
+    </div>
+
+    <!-- Teks di bawah foto — ganti nama di sini -->
+    <div class="photo-name">Owalah di tekan.. ,HABEDEEE CESS KU, MOGA MAKIN CANTEQ TRUS YE!</div>
+
+    <!-- Hati -->
+    <div class="heart-row">
+      <svg class="heart" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      <svg class="heart" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      <svg class="heart" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+    </div>
+
+    <button class="close-btn" onclick="closePhoto()">Tutup</button>
+  </div>
+
+  <!-- ================================
+    KONTEN UTAMA
+  ================================ -->
+  <div class="container">
+
+    <!-- BALON -->
+    <div class="balloons">
+      <div class="balloon"><svg width="42" height="75" viewBox="0 0 44 80"><ellipse cx="22" cy="28" rx="18" ry="22" fill="#E24B4A"/><path d="M22 50 Q20 58 22 66 Q24 58 22 50" fill="#A32D2D"/><ellipse cx="15" cy="20" rx="5" ry="7" fill="#F09595" opacity=".45"/></svg></div>
+      <div class="balloon"><svg width="42" height="75" viewBox="0 0 44 80"><ellipse cx="22" cy="28" rx="18" ry="22" fill="#c2185b"/><path d="M22 50 Q20 58 22 66 Q24 58 22 50" fill="#880e4f"/><ellipse cx="15" cy="20" rx="5" ry="7" fill="#f48fb1" opacity=".45"/></svg></div>
+      <div class="balloon"><svg width="42" height="75" viewBox="0 0 44 80"><ellipse cx="22" cy="28" rx="18" ry="22" fill="#7B1FA2"/><path d="M22 50 Q20 58 22 66 Q24 58 22 50" fill="#4A148C"/><ellipse cx="15" cy="20" rx="5" ry="7" fill="#CE93D8" opacity=".45"/></svg></div>
+      <div class="balloon"><svg width="42" height="75" viewBox="0 0 44 80"><ellipse cx="22" cy="28" rx="18" ry="22" fill="#c2185b"/><path d="M22 50 Q20 58 22 66 Q24 58 22 50" fill="#880e4f"/><ellipse cx="15" cy="20" rx="5" ry="7" fill="#f48fb1" opacity=".45"/></svg></div>
+      <div class="balloon"><svg width="42" height="75" viewBox="0 0 44 80"><ellipse cx="22" cy="28" rx="18" ry="22" fill="#E24B4A"/><path d="M22 50 Q20 58 22 66 Q24 58 22 50" fill="#A32D2D"/><ellipse cx="15" cy="20" rx="5" ry="7" fill="#F09595" opacity=".45"/></svg></div>
+    </div>
+
+    <!-- TEKS UTAMA -->
+    <div style="position:relative; display:inline-block; margin-bottom:.2rem;">
+      <span class="Happy__Birthday">Happy Birthday CTRL!</span>
+      <svg class="sparkle-icon" style="top:-8px;right:-18px;" width="22" height="22" viewBox="0 0 20 20"><path d="M10 1L12 8L19 10L12 12L10 19L8 12L1 10L8 8Z" fill="#f48fb1"/></svg>
+      <svg class="sparkle-icon" style="top:4px;left:-20px;animation-delay:1s;" width="16" height="16" viewBox="0 0 20 20"><path d="M10 1L12 8L19 10L12 12L10 19L8 12L1 10L8 8Z" fill="#CE93D8"/></svg>
+    </div>
+
+    <div class="subtitle">Anjayy dah Nambah tua dia Wok >< </div>
+
+    <!-- KUE -->
+    <svg width="210" height="195" viewBox="0 0 210 195">
+      <rect x="35" y="115" width="140" height="48" rx="8" fill="#880e4f"/>
+      <rect x="35" y="115" width="140" height="13" rx="4" fill="#c2185b"/>
+      <rect x="25" y="143" width="160" height="52" rx="8" fill="#4A148C"/>
+      <rect x="25" y="143" width="160" height="14" rx="4" fill="#7B1FA2"/>
+      <rect x="25" y="182" width="160" height="13" rx="4" fill="#6A1B9A"/>
+      <rect x="58"  y="88" width="12" height="30" rx="3" fill="#f48fb1"/>
+      <rect x="99"  y="83" width="12" height="35" rx="3" fill="#CE93D8"/>
+      <rect x="140" y="88" width="12" height="30" rx="3" fill="#f48fb1"/>
+      <g class="flame"><ellipse cx="64"  cy="81" rx="5" ry="9" fill="#EF9F27"/><ellipse cx="64"  cy="84" rx="3" ry="6" fill="#fff9c4"/></g>
+      <g class="flame" style="animation-delay:.15s"><ellipse cx="105" cy="76" rx="5" ry="9" fill="#EF9F27"/><ellipse cx="105" cy="79" rx="3" ry="6" fill="#fff9c4"/></g>
+      <g class="flame" style="animation-delay:.3s"><ellipse cx="146" cy="81" rx="5" ry="9" fill="#EF9F27"/><ellipse cx="146" cy="84" rx="3" ry="6" fill="#fff9c4"/></g>
+      <circle cx="55"  cy="153" r="5" fill="#f48fb1"/>
+      <circle cx="80"  cy="148" r="4" fill="#CE93D8"/>
+      <circle cx="105" cy="153" r="5" fill="#c2185b"/>
+      <circle cx="130" cy="148" r="4" fill="#7B1FA2"/>
+      <circle cx="155" cy="153" r="5" fill="#f48fb1"/>
+      <circle cx="48"  cy="168" r="3" fill="#CE93D8"/>
+      <circle cx="75"  cy="165" r="4" fill="#c2185b"/>
+      <circle cx="105" cy="168" r="3" fill="#f48fb1"/>
+      <circle cx="135" cy="165" r="4" fill="#7B1FA2"/>
+      <circle cx="162" cy="168" r="3" fill="#CE93D8"/>
+    </svg>
+
+    <!-- TOMBOL -->
+    <br>
+    <button class="btn-celebrate" onclick="celebrate()">Jangan Tekan Sumpah!</button>
+
+  </div>
+
+  <script>
+    const colors = ['#c2185b','#880e4f','#f48fb1','#7B1FA2','#CE93D8','#E24B4A','#fff9c4'];
+
+    function makeConfetti() {
+      const container = document.getElementById('confetti-container');
+      container.innerHTML = '';
+      for (let i = 0; i < 70; i++) {
+        const el = document.createElement('div');
+        const size = Math.random() * 9 + 5;
+        const isRect = Math.random() > 0.4;
+        el.style.cssText = `
+          position: absolute;
+          left: ${Math.random() * 100}%;
+          top: -20px;
+          width: ${isRect ? size : size * 0.6}px;
+          height: ${isRect ? size * 0.5 : size}px;
+          background: ${colors[Math.floor(Math.random() * colors.length)]};
+          border-radius: ${isRect ? '2px' : '50%'};
+          animation: confetti-fall ${Math.random() * 2.5 + 2}s linear ${Math.random() * 1.5}s infinite;
+        `;
+        container.appendChild(el);
+      }
+    }
+
+    function celebrate() {
+      makeConfetti();
+      showPhoto();
+    }
+
+    function showPhoto() {
+      const overlay = document.getElementById('photo-overlay');
+      const frame   = document.getElementById('photo-frame');
+      overlay.classList.add('show');
+      frame.classList.remove('pop');
+      void frame.offsetWidth;
+      frame.classList.add('pop');
+    }
+
+    function closePhoto() {
+      document.getElementById('photo-overlay').classList.remove('show');
+    }
+
+    makeConfetti();
+  </script>
+
+</body>
+</html>
